@@ -1,0 +1,1283 @@
+<html>
+<head>
+	<title>IL TETRIS By MurryRey97</title>
+	<style type="text/css">
+		.piece{
+			height:30px;
+			width:30px;
+		}
+	    div {
+	        position:absolute;
+        }
+	    .TASTI {
+	        margin-top:10px;
+            margin-left:265px;
+            border-radius:10px;
+            background-color:black;
+            height:130px;
+            width:200px;
+        }
+	    .CAMPO {
+	        margin-top:15px;
+            margin-left:500px;
+            border-radius:10px;
+            background-color:black;
+            height:640px;
+            width:320px;
+        }
+	    .SCORE {
+            margin-top:10px;
+            margin-left:865px;
+            height:100px;
+            width:120px;
+            border-radius:10px;
+            font-family:'Comic Sans MS';
+            color:white;
+            background-color:black;
+        }
+        .LIVELLO {
+            margin-top:120px;
+            margin-left:865px;
+            height:100px;
+            width:120px;
+            border-radius:10px;
+            font-family:'Comic Sans MS';
+            color:white;
+            background-color:black;
+        }
+        .LINEE {
+            margin-top:230px;
+            margin-left:865px;
+            height:100px;
+            width:120px;
+            border-radius:10px;
+            font-family:'Comic Sans MS';
+            color:white;
+            background-color:black;
+        }
+	    .TABDOPO {
+            height:150px;
+            width:150px;
+            border-radius:10px;
+	        margin-top:340px;
+            margin-left:850px;
+            border-radius:10px;
+            background-color:black;
+        }
+        .COMANDI {
+            height:130px;
+            width:180px;
+	        margin-top:505px;
+            margin-left:850px;
+            border-radius:10px;
+            background-color:black;
+            color:white;
+            font-family:'Comic Sans MS';
+            font-size:12px;
+        }
+	</style>
+
+	<script type="text/javascript">
+	    var Rig = 21, Col = 10;
+	    var score = 0; linee = 0; livello = 1, moltiplicatore=1, punti=5, nextlev=0;
+	    var i, j;
+	    var pausa = 0;
+	    //var //AUsottofondo = new //AUdio("sound/Tetris Song.mp3");
+	    //var //AUspostamento = new //AUdio("sound/#");
+	    //var //AUgiramento = new //AUdio("sound/#");
+	    //var //AUlinea = new //AUdio("sound/#");
+	    var NumForm = 7;
+	    //var Velocita = 1100;
+	    var Velocita = 800;
+	    var Vel = Velocita;
+	    var M = new Array();
+	    for (i = 1; i <= Rig; i++) {
+	        M[i] = new Array();
+	    }
+	    var MDopo = new Array();
+	    for (i = 1; i <= 5; i++) {
+	        MDopo[i] = new Array();
+	    }
+	    var possospostare = 1;
+	    var forma;
+	    var formaDopo;
+	    var color;
+	    var orientamento;
+	    var finegioco = 0;
+	    //*****
+	    var PezdX = new Array();
+	    var PezdY = new Array();
+	    //**********
+	    var PezX = new Array();
+	    var PezY = new Array();
+	    var LimPez;
+        //*****
+	    var SinX = new Array();
+	    var SinY = new Array();
+	    var LimSin;
+	    //*****
+	    var DesX = new Array();
+	    var DesY = new Array();
+	    var LimDes;
+	    //*****
+	    var GiuX = new Array();
+	    var GiuY = new Array();
+	    var LimGiu;
+	    //*****
+	    //*************
+        //questi qua
+	    document.write('<center><div class="TASTI">');
+        document.write('<img src="image/sinistra.png" onclick="ShiftSinistra()">');
+        document.write('<img src="image/gira.png" onclick="GiraBlocco()">');
+        document.write('<img src="image/destra.png" onclick="ShiftDestra()">');
+        document.write('<br><center><img src="image/accellera.png" onclick="if((Velocita==Vel)&&(pausa==0)){Velocita=50;}else{Velocita=Vel;}"></center></div>');
+        document.write('<center>');
+        //fine
+	    //***************
+	    document.write('<center><div class="CAMPO"><table cellspacing="0" cellpadding="0">');
+	    for (i = 1; i <= Rig; i++) {
+	        document.write('<tr>');
+	        for (j = 1; j <= Col; j++) {
+	            document.write('<td><img src="image/0.png"  id="' + i + '#' + j + '" class="piece"></td>');
+	            M[i][j] = 0;
+	        }
+	        document.write('</tr>');
+	    }
+	    document.write('</table><div></center>');
+	    document.write("<div class='SCORE'><center><p>SCORE</p><p id='score'>0</p></center></div>");
+	    document.write("<div class='LIVELLO'><center><p>LIVELLO</p><p id='livello'>1</p></center></div>");
+	    document.write("<div class='LINEE'><center><p>LINEE</p><p id='linee'>0</p></center></div>");
+	    document.write("<div class='TABDOPO'>");
+	    document.write("<center><table cellspacing='0' cellpadding='0'>");
+	    for (i = 1; i <= 5; i++) {
+	        document.write('<tr>');
+	        for (j = 1; j <= 5; j++) {
+	            document.write('<td><img src="image/0.png"  id="' + i + 'dopo' + j + '" class="piece"></td>');
+	            MDopo[i][j] = 0;
+	        }
+	        document.write('</tr>');
+	    }
+	    document.write("</table></center>");
+	    document.write("</div>");
+	    document.write("<div class='COMANDI'>");
+	    document.write("<center><p>COMANDI TASTIERA</p></center>Sinitra: freccia sinistra / A<br>");
+	    document.write("Destra: freccia destra / D<br>");
+	    document.write("Accellera: freccia giu / S<br>");
+	    document.write("Ruota: space<br>");
+	    document.write("pausa: freccia su / W");
+	    document.write("</div>");
+	    //AUsottofondo.play();
+	    /*
+        <//AUdio><source src='suond/Thunderstruck.mp3' type='//AUdio/mp3'><///AUdio>
+        <embed src='sound/01 Thunderstruck.mp3' //AUtostart=true loop=true volume='20' width='0' height='0'>
+        */
+	    //formaDopo = Math.floor(Math.random() * NumForm + 1);
+	    GeneraDopo();
+	    Genera();
+	    //******************************
+        //***** PUNTEGGI ***************
+	    function Punteggi() {
+	        Velocita = Vel;
+	        possospostare = 0;
+	        var Con, RigheFatte = 0;
+	        moltiplicatore = 1;
+	        //var righedacanc = new Array();
+	        for (i = Rig; i >= 1;i--){
+	            Con=0;
+	            for (j = 1; j <= Col; j++) {
+	                if(M[i][j]!=0){Con++}
+	            }
+	            if (Con == Col) {
+	                linee++;
+	                moltiplicatore *= 2;
+	                nextlev++;
+	                //righedacanc[RigheFatte] = i;
+	                RigheFatte++;
+	                for (var ii = 1; ii <= Col; ii++) { M[i][ii] = 11;}
+	            }
+	        }
+	        if (RigheFatte != 0) { setTimeout("Immagini()", 1000); setTimeout("TogliRighe()", 1000); } else { setTimeout("Genera();", 1000); }
+	    }
+
+	    function TogliRighe() {
+	        //Immagini();
+	        punti = punti * moltiplicatore;
+	        score = score + punti;
+	        if (nextlev >= 10) {
+	            /*
+                1 1000
+                2 900
+                3 800
+                4 700
+                5 600
+                6 500
+                7 400
+                8 300
+				9 250
+				10+ 200
+                */
+	            livello++;
+	            if (livello <= 7) {
+	                Velocita = Velocita - 100;
+	            } else if (livello <= 10){
+	                Velocita = Velocita - 50;
+	            }
+	            Vel = Velocita; nextlev = 0;
+	        }
+	        punti = 5;
+	        document.getElementById("score").innerHTML = score;
+	        document.getElementById("livello").innerHTML = livello;
+	        document.getElementById("linee").innerHTML = linee;
+	        for (i = Rig; i >= 1; i--) {
+	                if (M[i][1] > 7) {
+	                    var ii, jj;
+	                    for (ii = i; ii > 1; ii--) {
+	                        for (jj = 1; jj <= Col; jj++) {
+	                            M[ii][jj] = M[ii - 1][jj];
+	                        }
+	                    }
+	                    i++;
+	                }
+	        }
+	        //Immagini();
+	        setTimeout("Immagini();", Velocita);
+	        //Genera();
+	        setTimeout("Genera();", Velocita);
+	    }
+        //**********************************************************************************
+	    //**********************************************************************************
+        //********************* GENERA *****************************************************
+
+	    function Genera() {
+	        //AUsottofondo.play();
+	        //AUspostamento.play();
+	        possospostare = 1;
+	        var c = parseInt(Col / 2);
+	        orientamento = 1;
+	        forma = formaDopo;
+	        color = forma;
+	        if (forma == 1) {
+	            /*
+                #
+                #
+                #
+                #
+                */
+	            PezX[1] = 1; PezY[1] = c;
+	            PezX[2] = 2; PezY[2] = c;
+	            PezX[3] = 3; PezY[3] = c;
+	            PezX[4] = 4; PezY[4] = c;
+	            LimPez = 4;
+	            if ((M[PezX[1]][PezY[1]] != 0) || (M[PezX[2]][PezY[2]] != 0) || (M[PezX[3]][PezY[3]] != 0) || (M[PezX[4]][PezY[4]] != 0)) {
+	                finegioco = 1;
+	            }
+                //****
+	            SinX[1] = 1; SinY[1] = c - 1;
+	            SinX[2] = 2; SinY[2] = c - 1;
+	            SinX[3] = 3; SinY[3] = c - 1;
+	            SinX[4] = 4; SinY[4] = c - 1;
+	            LimSin = 4;
+	            //****
+	            DesX[1] = 1; DesY[1] = c + 1;
+	            DesX[2] = 2; DesY[2] = c + 1;
+	            DesX[3] = 3; DesY[3] = c + 1;
+	            DesX[4] = 4; DesY[4] = c + 1;
+	            LimDes = 4;
+	            //****
+	            GiuX[1] = 5; GiuY[1] = c;
+	            LimGiu = 1;
+                //*****************************
+	        } else if (forma == 2) {
+	            /*
+                # #
+                # #
+                */
+	            PezX[1] = 1; PezY[1] = c;
+	            PezX[2] = 2; PezY[2] = c;
+	            PezX[3] = 1; PezY[3] = c+1;
+	            PezX[4] = 2; PezY[4] = c+1;
+	            LimPez = 4;
+	            if ((M[PezX[1]][PezY[1]] != 0) || (M[PezX[2]][PezY[2]] != 0) || (M[PezX[3]][PezY[3]] != 0) || (M[PezX[4]][PezY[4]] != 0)) {
+	                finegioco = 1;
+	            }
+	            //M[1][c] = color; M[2][c] = color; M[1][c + 1] = color; M[2][c + 1] = color;
+	            SinX[1] = 1; SinY[1] = c - 1;
+	            SinX[2] = 2; SinY[2] = c - 1;
+	            LimSin = 2;
+	            //****
+	            DesX[1] = 1; DesY[1] = c + 2;
+	            DesX[2] = 2; DesY[2] = c + 2;
+	            LimDes = 2;
+	            //****
+	            GiuX[1] = 3; GiuY[1] = c;
+	            GiuX[2] = 3; GiuY[2] = c+1;
+	            LimGiu = 2;
+                //************************************
+	        } else if (forma == 3) {
+	            /*
+                  #
+                # # #
+                */
+	            PezX[1] = 1; PezY[1] = c;
+	            PezX[2] = 2; PezY[2] = c-1;
+	            PezX[3] = 2; PezY[3] = c;
+	            PezX[4] = 2; PezY[4] = c+1;
+	            LimPez = 4;
+	            if ((M[PezX[1]][PezY[1]] != 0) || (M[PezX[2]][PezY[2]] != 0) || (M[PezX[3]][PezY[3]] != 0) || (M[PezX[4]][PezY[4]] != 0)) {
+	                finegioco = 1;
+	            }
+	            //M[2][c] = color; M[2][c - 1] = color; M[2][c + 1] = color; M[1][c] = color;
+	            SinX[1] = 1; SinY[1] = c - 1;
+	            SinX[2] = 2; SinY[2] = c - 2;
+	            LimSin = 2;
+	            //****
+	            DesX[1] = 1; DesY[1] = c + 1;
+	            DesX[2] = 2; DesY[2] = c + 2;
+	            LimDes = 2;
+	            //****
+	            GiuX[1] = 3; GiuY[1] = c-1;
+	            GiuX[2] = 3; GiuY[2] = c;
+	            GiuX[3] = 3; GiuY[3] = c + 1;
+	            LimGiu = 3;
+	            //************************************
+	        } else if (forma == 4) {
+	            /*
+                # #
+                  #
+                  #
+                */
+	            PezX[1] = 1; PezY[1] = c;
+	            PezX[2] = 1; PezY[2] = c + 1;
+	            PezX[3] = 2; PezY[3] = c + 1;
+	            PezX[4] = 3; PezY[4] = c + 1;
+	            LimPez = 4;
+	            if ((M[PezX[1]][PezY[1]] != 0) || (M[PezX[2]][PezY[2]] != 0) || (M[PezX[3]][PezY[3]] != 0) || (M[PezX[4]][PezY[4]] != 0)) {
+	                finegioco = 1;
+	            }
+	            //M[2][c] = color; M[2][c - 1] = color; M[2][c + 1] = color; M[1][c] = color;
+	            SinX[1] = 1; SinY[1] = c - 1;
+	            SinX[2] = 2; SinY[2] = c;
+	            SinX[3] = 3; SinY[3] = c;
+	            LimSin = 3;
+	            //****
+	            DesX[1] = 1; DesY[1] = c + 2;
+	            DesX[2] = 2; DesY[2] = c + 2;
+	            DesX[3] = 3; DesY[3] = c + 2;
+	            LimDes = 3;
+	            //****
+	            GiuX[1] = 2; GiuY[1] = c;
+	            GiuX[2] = 4; GiuY[2] = c + 1;
+	            LimGiu = 2;
+	            //************************************
+	        } else if (forma == 5) {
+	            /*
+                # #
+                #
+                #
+                */
+	            PezX[1] = 1; PezY[1] = c;
+	            PezX[2] = 1; PezY[2] = c + 1;
+	            PezX[3] = 2; PezY[3] = c;
+	            PezX[4] = 3; PezY[4] = c;
+	            LimPez = 4;
+	            if ((M[PezX[1]][PezY[1]] != 0) || (M[PezX[2]][PezY[2]] != 0) || (M[PezX[3]][PezY[3]] != 0) || (M[PezX[4]][PezY[4]] != 0)) {
+	                finegioco = 1;
+	            }
+	            //M[2][c] = color; M[2][c - 1] = color; M[2][c + 1] = color; M[1][c] = color;
+	            SinX[1] = 1; SinY[1] = c - 1;
+	            SinX[2] = 2; SinY[2] = c - 1;
+	            SinX[3] = 3; SinY[3] = c - 1;
+	            LimSin = 3;
+	            //****
+	            DesX[1] = 1; DesY[1] = c + 2;
+	            DesX[2] = 2; DesY[2] = c + 1;
+	            DesX[3] = 3; DesY[3] = c + 1;
+	            LimDes = 3;
+	            //****
+	            GiuX[1] = 2; GiuY[1] = c+1;
+	            GiuX[2] = 4; GiuY[2] = c;
+	            LimGiu = 2;
+	            //************************************
+	        } else if (forma == 6) {
+	            /*
+                # #
+                  # #
+                */
+	            PezX[1] = 1; PezY[1] = c-1;
+	            PezX[2] = 1; PezY[2] = c;
+	            PezX[3] = 2; PezY[3] = c;
+	            PezX[4] = 2; PezY[4] = c+1;
+	            LimPez = 4;
+	            if ((M[PezX[1]][PezY[1]] != 0) || (M[PezX[2]][PezY[2]] != 0) || (M[PezX[3]][PezY[3]] != 0) || (M[PezX[4]][PezY[4]] != 0)) {
+	                finegioco = 1;
+	            }
+	            //M[2][c] = color; M[2][c - 1] = color; M[2][c + 1] = color; M[1][c] = color;
+	            SinX[1] = 1; SinY[1] = c - 2;
+	            SinX[2] = 2; SinY[2] = c - 1;
+	            LimSin = 2;
+	            //****
+	            DesX[1] = 1; DesY[1] = c + 1;
+	            DesX[2] = 2; DesY[2] = c + 2;
+	            LimDes = 2;
+	            //****
+	            GiuX[1] = 2; GiuY[1] = c - 1;
+	            GiuX[2] = 3; GiuY[2] = c;
+	            GiuX[3] = 3; GiuY[3] = c+1;
+	            LimGiu = 3;
+	            if ((M[PezX[1]][PezY[1]] != 0) || (M[PezX[2]][PezY[2]] != 0) || (M[PezX[3]][PezY[3]] != 0) || (M[PezX[4]][PezY[4]] != 0)) {
+	                finegioco = 1;
+	            }
+	            //************************************
+	        } else if (forma == 7) {
+	            /*
+                  # #
+                # #
+                */
+	            PezX[1] = 1; PezY[1] = c;
+	            PezX[2] = 1; PezY[2] = c+1;
+	            PezX[3] = 2; PezY[3] = c-1;
+	            PezX[4] = 2; PezY[4] = c;
+	            LimPez = 4;
+	            if ((M[PezX[1]][PezY[1]] != 0) || (M[PezX[2]][PezY[2]] != 0) || (M[PezX[3]][PezY[3]] != 0) || (M[PezX[4]][PezY[4]] != 0)) {
+	                finegioco = 1;
+	            }
+	            //M[2][c] = color; M[2][c - 1] = color; M[2][c + 1] = color; M[1][c] = color;
+	            SinX[1] = 1; SinY[1] = c - 1;
+	            SinX[2] = 2; SinY[2] = c - 2;
+	            LimSin = 2;
+	            //****
+	            DesX[1] = 1; DesY[1] = c + 2;
+	            DesX[2] = 2; DesY[2] = c + 1;
+	            LimDes = 2;
+	            //****
+	            GiuX[1] = 2; GiuY[1] = c + 1;
+	            GiuX[2] = 3; GiuY[2] = c;
+	            GiuX[3] = 3; GiuY[3] = c - 1;
+	            LimGiu = 3;
+	            //************************************
+	        }
+	        GeneraDopo();
+	        if (finegioco == 0) { for (var ii = 1; ii <= LimPez; ii++) { M[PezX[ii]][PezY[ii]] = color; } ShiftGiu(); } else { alert("hai perso");}
+	        Immagini();
+	    }
+	    //**********************************************************************************
+	    //********************* FINE GENERA *****************************************************
+	    function GeneraDopo() {
+	        var c = 3;
+	        formaDopo = Math.floor(Math.random() * NumForm + 1);
+	        if (formaDopo == 1) {
+	            /*
+                #
+                #
+                #
+                #
+                */
+	            PezdX[1] = 2; PezdY[1] = c;
+	            PezdX[2] = 3; PezdY[2] = c;
+	            PezdX[3] = 4; PezdY[3] = c;
+	            PezdX[4] = 5; PezdY[4] = c;
+	            //*****************************
+	        } else if (formaDopo == 2) {
+	            /*
+                # #
+                # #
+                */
+	            PezdX[1] = 3; PezdY[1] = c;
+	            PezdX[2] = 4; PezdY[2] = c;
+	            PezdX[3] = 3; PezdY[3] = c + 1;
+	            PezdX[4] = 4; PezdY[4] = c + 1;
+	            //************************************
+	        } else if (formaDopo == 3) {
+	            /*
+                  #
+                # # #
+                */
+	            PezdX[1] = 3; PezdY[1] = c;
+	            PezdX[2] = 4; PezdY[2] = c - 1;
+	            PezdX[3] = 4; PezdY[3] = c;
+	            PezdX[4] = 4; PezdY[4] = c + 1;
+	            //************************************
+	        } else if (formaDopo == 4) {
+	            /*
+                # #
+                  #
+                  #
+                */
+	            PezdX[1] = 2; PezdY[1] = c;
+	            PezdX[2] = 2; PezdY[2] = c + 1;
+	            PezdX[3] = 3; PezdY[3] = c + 1;
+	            PezdX[4] = 4; PezdY[4] = c + 1;
+	            //************************************
+	        } else if (formaDopo == 5) {
+	            /*
+                # #
+                #
+                #
+                */
+	            PezdX[1] = 2; PezdY[1] = c;
+	            PezdX[2] = 2; PezdY[2] = c + 1;
+	            PezdX[3] = 3; PezdY[3] = c;
+	            PezdX[4] = 4; PezdY[4] = c;
+	            //************************************
+	        } else if (formaDopo == 6) {
+	            /*
+                # #
+                  # #
+                */
+	            PezdX[1] = 3; PezdY[1] = c - 1;
+	            PezdX[2] = 3; PezdY[2] = c;
+	            PezdX[3] = 4; PezdY[3] = c;
+	            PezdX[4] = 4; PezdY[4] = c + 1;
+	            //************************************
+	        } else if (formaDopo == 7) {
+	            /*
+                  # #
+                # #
+                */
+	            PezdX[1] = 3; PezdY[1] = c;
+	            PezdX[2] = 3; PezdY[2] = c + 1;
+	            PezdX[3] = 4; PezdY[3] = c - 1;
+	            PezdX[4] = 4; PezdY[4] = c;
+	            //************************************
+	        }
+	        for (i = 1; i <= 5; i++) {
+	            for (j = 1; j <= 5; j++) {
+	                MDopo[i][j] = 0;
+	            }
+	        }
+	        for (i = 1; i <= 4; i++) {
+	            MDopo[PezdX[i]][PezdY[i]] = formaDopo;
+	        }
+	        for (i = 1; i <= 5; i++) {
+	            for (j = 1; j <= 5; j++) {
+	                document.getElementById(i + "dopo" + j).src = "image/"+MDopo[i][j]+".png";
+	            }
+	        }
+	    }
+	    //***************************************************
+        //************ FUNZIONI DI SHIFT ********************
+	    function ShiftGiu() {
+	        if (pausa != 1) {
+	            var ii, jj;
+	            var PossoScendere = true;
+	            var Xmin = -1;
+	            for (ii = 1; ii <= LimGiu; ii++) { if (GiuX[ii] > Xmin) { Xmin = GiuX[ii]; } }
+	            if (Xmin <= Rig) {
+	                for (ii = 1; ii <= LimGiu; ii++) {
+	                    if (M[GiuX[ii]][GiuY[ii]] != 0) { PossoScendere = false; }
+	                }
+	                if (PossoScendere) {
+	                    //shift
+	                    for (ii = 1; ii <= LimPez; ii++) { M[PezX[ii]][PezY[ii]] = 0; PezX[ii] = PezX[ii] + 1; }
+	                    for (ii = 1; ii <= LimPez; ii++) { M[PezX[ii]][PezY[ii]] = color; }
+	                    for (ii = 1; ii <= LimGiu; ii++) { GiuX[ii] = GiuX[ii] + 1; }
+	                    for (ii = 1; ii <= LimSin; ii++) { SinX[ii] = SinX[ii] + 1; }
+	                    for (ii = 1; ii <= LimDes; ii++) { DesX[ii] = DesX[ii] + 1; }
+	                    setTimeout("ShiftGiu()", Velocita);
+	                } else {
+	                    Punteggi();
+	                }
+	            } else {
+	                Punteggi();
+	            }
+	            Immagini();
+	        } else {
+	            setTimeout("ShiftGiu()", Velocita);
+	        }
+	    }
+	    //*********************************************************
+	    function ShiftSinistra() {
+	        if (pausa != 1) {
+	            //AUspostamento.play()
+	            if (possospostare == 1) {
+	                var ii, jj;
+	                var PossoScendere = true;
+	                var Ymin = 100;
+	                for (ii = 1; ii <= LimSin; ii++) { if (SinY[ii] < Ymin) { Ymin = SinY[ii]; } }
+	                if (Ymin >= 0) {
+	                    for (ii = 1; ii <= LimSin; ii++) {
+	                        if (M[SinX[ii]][SinY[ii]] != 0) { PossoScendere = false; }
+	                    }
+	                    if (PossoScendere) {
+	                        //shift
+	                        for (ii = 1; ii <= LimPez; ii++) { M[PezX[ii]][PezY[ii]] = 0; PezY[ii] = PezY[ii] - 1; }
+	                        for (ii = 1; ii <= LimPez; ii++) { M[PezX[ii]][PezY[ii]] = color; }
+	                        for (ii = 1; ii <= LimGiu; ii++) { GiuY[ii] = GiuY[ii] - 1; }
+	                        for (ii = 1; ii <= LimSin; ii++) { SinY[ii] = SinY[ii] - 1; }
+	                        for (ii = 1; ii <= LimDes; ii++) { DesY[ii] = DesY[ii] - 1; }
+	                    }
+	                }
+	                Immagini();
+	            }
+	        }
+	    }
+	    //*******************************************************
+	    function ShiftDestra() {
+	        if (pausa != 1) {
+	            //AUspostamento.play()
+	            if (possospostare == 1) {
+	                var ii, jj;
+	                var PossoScendere = true;
+	                var Ymax = -1;
+	                for (ii = 1; ii <= LimDes; ii++) { if (DesY[ii] > Ymax) { Ymax = DesY[ii]; } }
+	                if (Ymax <= Col + 1) {
+	                    for (ii = 1; ii <= LimDes; ii++) {
+	                        if (M[DesX[ii]][DesY[ii]] != 0) { PossoScendere = false; }
+	                    }
+	                    if (PossoScendere) {
+	                        //shift
+	                        for (ii = 1; ii <= LimPez; ii++) { M[PezX[ii]][PezY[ii]] = 0; PezY[ii] = PezY[ii] + 1; }
+	                        for (ii = 1; ii <= LimPez; ii++) { M[PezX[ii]][PezY[ii]] = color; }
+	                        for (ii = 1; ii <= LimGiu; ii++) { GiuY[ii] = GiuY[ii] + 1; }
+	                        for (ii = 1; ii <= LimSin; ii++) { SinY[ii] = SinY[ii] + 1; }
+	                        for (ii = 1; ii <= LimDes; ii++) { DesY[ii] = DesY[ii] + 1; }
+	                    }
+	                }
+	                Immagini();
+	            }
+	        }
+	    }
+	    //***********************************************************
+        //***********************************************************
+	    function Tastierino() {
+	        mov = event.keyCode;
+	        if (finegioco == 0) {
+	            if ((mov == 37) || (mov==65)){
+	                //sinistra
+	                ShiftSinistra();
+	            } else if ((mov == 39) || (mov==68)){
+	                //destra
+	                ShiftDestra();
+	            } else if ((mov == 40) || (mov==83)) {
+	                Velocita = 50;
+	            } else if ((mov == 38) || (mov == 87)) {
+	                if (pausa==1) {
+	                    pausa = 0;
+	                    //ShiftGiu();
+	                    document.getElementById("score").innerHTML = score;
+	                } else {
+	                    pausa = 1;
+	                    document.getElementById("score").innerHTML = "pausa";
+	                }
+	            } else if (mov == 32) {
+	                GiraBlocco();
+	            } else if (mov == 66) {
+	                livello = 8; Velocita = 100; Vel = 100;
+	            }
+	            Immagini();
+	        }
+	    }
+
+	    //**********************************************************************************
+	    //**********************************************************************************
+	    //********************* GIRA BLOCCHI *****************************************************
+
+	    function GiraBlocco() {
+	        //AUgiramento.play()
+	        //***************************************************************
+	        //***************************************************************
+	        //******************* NUOVA FORMA ******************************
+            if(pausa==0){
+	        if(forma==1){
+	            if (orientamento == 1) {
+	                if ((M[PezX[2]][PezY[1] - 2] == 0) && (M[PezX[2]][PezY[1] - 1] == 0) && (M[PezX[2]][PezY[1] + 1] == 0)) {
+	                    /*prima
+                        #
+                        #
+                        #
+                        #
+                        dopo 
+                        # # # #
+                        */
+	                    orientamento = 2;
+	                    var ii, jj;
+	                    for (ii = 1; ii <= LimPez; ii++) { M[PezX[ii]][PezY[ii]] = 0; }
+	                    //*** cambio coordinate pezzo ******
+	                    PezX[1]++; PezX[2] = PezX[1]; PezX[3] = PezX[1]; PezX[4] = PezX[1];
+	                    PezY[1] = PezY[1] - 2; PezY[2] = PezY[1] + 1; PezY[3] = PezY[1] + 2; PezY[4] = PezY[1] + 3;
+	                    for (ii = 1; ii <= LimPez; ii++) { M[PezX[ii]][PezY[ii]] = color; }
+	                    //*********
+	                    SinX[1] = SinX[2]; SinY[1] = SinY[1] - 2;
+	                    LimSin = 1;
+	                    //****
+	                    DesX[1] = DesX[2]; DesY[1] = DesY[1] + 1;
+	                    LimDes = 1;
+	                    //****
+	                    GiuX[1] = GiuX[1] - 2; GiuY[1] = GiuY[1] - 2;
+	                    GiuX[2] = GiuX[1]; GiuY[2] = GiuY[1] + 1;
+	                    GiuX[3] = GiuX[1]; GiuY[3] = GiuY[1] + 2;
+	                    GiuX[4] = GiuX[1]; GiuY[4] = GiuY[1] + 3;
+	                    LimGiu = 4;
+	                }
+	            } else {
+	                //da mettere controllo se puo ruotare
+	                if ((M[PezX[2] - 1][PezY[3]] == 0) && (M[PezX[2] + 1][PezY[3]] == 0) && (M[PezX[2] + 2][PezY[3]] == 0)) {
+	                    orientamento = 1;
+	                    /*prima
+                        # # # #
+                        dopo 
+                        #
+                        #
+                        #
+                        #
+                        */
+	                    for (ii = 1; ii <= LimPez; ii++) { M[PezX[ii]][PezY[ii]] = 0; }
+	                    PezX[1]--; PezX[2] = PezX[1] + 1; PezX[3] = PezX[1] + 2; PezX[4] = PezX[1] + 3;
+	                    PezY[1] = PezY[1] + 2; PezY[2] = PezY[1]; PezY[3] = PezY[1]; PezY[4] = PezY[1];
+	                    for (ii = 1; ii <= LimPez; ii++) { M[PezX[ii]][PezY[ii]] = color; }
+	                    //*****************
+	                    SinX[1] = SinX[1] - 1; SinY[1] = SinY[1] + 2;
+	                    SinX[2] = SinX[1] + 1; SinY[2] = SinY[1];
+	                    SinX[3] = SinX[1] + 2; SinY[3] = SinY[1];
+	                    SinX[4] = SinX[1] + 3; SinY[4] = SinY[1];
+	                    LimSin = 4;
+	                    //****
+	                    DesX[1] = DesX[1] - 1; DesY[1] = DesY[1] - 1;
+	                    DesX[2] = DesX[1] + 1; DesY[2] = DesY[1];
+	                    DesX[3] = DesX[1] + 2; DesY[3] = DesY[1];
+	                    DesX[4] = DesX[1] + 3; DesY[4] = DesY[1];
+	                    LimDes = 4;
+	                    //****
+	                    GiuX[1] = GiuX[1] + 2; GiuY[1] = GiuY[3];
+	                    LimGiu = 1;
+	                }
+	            }
+	            //***************************************************************
+	            //***************************************************************
+	            //******************* NUOVA FORMA *******************************
+	        }else if(forma==3){
+	            if (orientamento == 1) {
+	                if ((M[PezX[1]][PezY[2]] == 0) && (M[PezX[1]-1][PezY[2]] == 0)) {
+	                    /*prima
+                          #
+                        # # #
+                        dopo 
+                        #
+                        # #
+                        #
+                        */
+	                    orientamento = 2;
+	                    var ii, jj;
+	                    for (ii = 1; ii <= LimPez; ii++) { M[PezX[ii]][PezY[ii]] = 0; }
+	                    //*** cambio coordinate pezzo ******
+	                    PezX[1]--; PezX[2]--; PezX[3]--; PezX[4]=PezX[4];
+	                    PezY[1]--; PezY[2]=PezY[2]; PezY[3]=PezY[3]; PezY[4] = PezY[4]-2;
+	                    for (ii = 1; ii <= LimPez; ii++) { M[PezX[ii]][PezY[ii]] = color; }
+	                    //*********
+	                    SinX[1] = PezX[1]; SinY[1] = PezY[1]-1;
+	                    SinX[2] = PezX[2]; SinY[2] = PezY[1] - 1;
+	                    SinX[3] = PezX[4]; SinY[3] = PezY[1] - 1;
+	                    LimSin = 3;
+	                    //****
+	                    DesX[1] = PezX[1]; DesY[1] = PezY[1]+1;
+	                    DesX[2] = PezX[2]; DesY[2] = PezY[1]+2;
+	                    DesX[3] = PezX[4]; DesY[3] = PezY[2]+1;
+	                    LimDes = 3;
+	                    //****
+	                    GiuX[1] = PezX[4]; GiuY[1] = PezY[3];
+	                    GiuX[2] = PezX[4]+1; GiuY[2] = PezY[4];
+	                    LimGiu = 2;
+	                }
+	            } else if(orientamento==2){
+	                //da mettere controllo se puo ruotare
+	                if ((M[PezX[1]][PezY[3]] == 0) && (M[PezX[1]][PezY[3]+1] == 0)) {
+	                    orientamento = 3;
+	                    /*prima
+                        #
+                        # #
+                        #
+                        dopo 
+                        # # #
+                          #
+                        */
+	                    for (ii = 1; ii <= LimPez; ii++) { M[PezX[ii]][PezY[ii]] = 0; }
+	                    PezX[1] = PezX[1]; PezX[2] = PezX[2]-1; PezX[3] = PezX[3]-1; PezX[4] = PezX[4]-1;
+	                    PezY[1] = PezY[1]; PezY[2] = PezY[2]+1; PezY[3] = PezY[3]+1; PezY[4]++;
+	                    for (ii = 1; ii <= LimPez; ii++) { M[PezX[ii]][PezY[ii]] = color; }
+	                    //*****************
+	                    SinX[1] = PezX[1]; SinY[1] = PezY[1]-1;
+	                    SinX[2] = PezX[4]; SinY[2] = PezY[1];
+	                    LimSin = 2;
+	                    //****
+	                    DesX[1] = PezX[1]; DesY[1] = PezY[3]+1;
+	                    DesX[2] = PezX[4]; DesY[2] = PezY[3];
+	                    LimDes = 2;
+	                    //****
+	                    GiuX[1] = PezX[4]; GiuY[1] = PezY[1];
+	                    GiuX[2] = PezX[4]; GiuY[2] = PezY[3];
+	                    GiuX[3] = PezX[4] + 1; GiuY[3] = PezY[2];
+	                    LimGiu = 3;
+	                }
+	            } else if (orientamento == 3) {
+	                //da mettere controllo se puo ruotare
+	                if ((M[PezX[4]+1][PezY[3]] == 0) && (M[PezX[4]][PezY[3]] == 0)) {
+	                    orientamento = 4;
+	                    /*prima
+                        # # #
+                          #
+                        dopo 
+                            #
+                          # #
+                            #
+                        */
+	                    for (ii = 1; ii <= LimPez; ii++) { M[PezX[ii]][PezY[ii]] = 0; }
+	                    PezX[1] = PezX[1]; PezX[2] = PezX[2]+1; PezX[3] = PezX[3]+1; PezX[4] = PezX[4]+1;
+	                    PezY[1] = PezY[3]; PezY[2] = PezY[2]; PezY[3] = PezY[3]; PezY[4]++;
+	                    for (ii = 1; ii <= LimPez; ii++) { M[PezX[ii]][PezY[ii]] = color; }
+	                    //*****************
+	                    SinX[1] = PezX[1]; SinY[1] = PezY[2];
+	                    SinX[2] = PezX[2]; SinY[2] = PezY[2] - 1;
+	                    SinX[3] = PezX[4]; SinY[3] = PezY[2];
+	                    LimSin = 3;
+	                    //****
+	                    DesX[1] = PezX[1]; DesY[1] = PezY[1]+1;
+	                    DesX[2] = PezX[2]; DesY[2] = PezY[1] + 1;
+	                    DesX[3] = PezX[4]; DesY[3] = PezY[1] + 1;
+	                    LimDes = 3;
+	                    //****
+	                    GiuX[1] = PezX[4]; GiuY[1] = PezY[2];
+	                    GiuX[2] = PezX[4] + 1; GiuY[2] = PezY[1];
+	                    LimGiu = 2;
+	                }
+	            } else if (orientamento == 4) {
+	                //da mettere controllo se puo ruotare
+	                if ((M[PezX[4]][PezY[2]] == 0) && (M[PezX[4]][PezY[2]-1] == 0)) {
+	                    orientamento = 1;
+	                    /*prima
+                            #
+                          # #
+                            #
+                        dopo 
+                          #
+                        # # #
+                        */
+	                    for (ii = 1; ii <= LimPez; ii++) { M[PezX[ii]][PezY[ii]] = 0; }
+	                    PezX[1]++; PezX[2] = PezX[2]+1; PezX[3] = PezX[3]+1; PezX[4] = PezX[4];
+	                    PezY[1]--; PezY[2] = PezY[2] - 1; PezY[3] = PezY[3] - 1; PezY[4] = PezY[4];
+	                    for (ii = 1; ii <= LimPez; ii++) { M[PezX[ii]][PezY[ii]] = color; }
+	                    //*****************
+	                    SinX[1] = PezX[1]; SinY[1] = PezY[2];
+	                    SinX[2] = PezX[2]; SinY[2] = PezY[2]-1;
+	                    LimSin = 2;
+	                    //****
+	                    DesX[1] = PezX[1]; DesY[1] = PezY[4];
+	                    DesX[2] = PezX[2]; DesY[2] = PezY[4]+1;
+	                    LimDes = 2;
+	                    //****
+	                    GiuX[1] = PezX[2] + 1; GiuY[1] = PezY[2];
+	                    GiuX[2] = PezX[2] + 1; GiuY[2] = PezY[3];
+	                    GiuX[3] = PezX[2] + 1; GiuY[3] = PezY[4];
+	                    LimGiu = 3;
+	                }
+	            }
+	            //***************************************************************
+	            //***************************************************************
+                //******************* NUOVA FORMA *******************************
+	        } else if (forma == 6) {
+	            if (orientamento == 1) {
+	                if ((M[PezX[1]-1][PezY[4]] == 0) && (M[PezX[1]][PezY[4]] == 0)) {
+	                    /*prima
+                        # #
+                          # #
+                        dopo 
+                          #
+                        # #
+                        #
+                        */
+	                    orientamento = 2;
+	                    var ii, jj;
+	                    for (ii = 1; ii <= LimPez; ii++) { M[PezX[ii]][PezY[ii]] = 0; }
+	                    //*** cambio coordinate pezzo ******
+	                    PezX[1]--; PezX[2] = PezX[2]; PezX[3] = PezX[3]-1; PezX[4] = PezX[4];
+	                    PezY[1] = PezY[1] + 2; PezY[2] = PezY[2]; PezY[3] = PezY[3] + 1; PezY[4] = PezY[4] - 1;
+	                    for (ii = 1; ii <= LimPez; ii++) { M[PezX[ii]][PezY[ii]] = color; }
+	                    //*********
+	                    SinX[1] = SinX[1]-1; SinY[1] = SinY[1] + 2;
+	                    SinX[2] = SinX[2]-1; SinY[2] = SinY[2];
+	                    SinX[3] = SinX[2]+1; SinY[3] = SinY[2];
+	                    LimSin = 3;
+	                    //****
+	                    DesX[1] = DesX[1]-1; DesY[1] = DesY[1] + 1;
+	                    DesX[2] = DesX[2]-1; DesY[2] = DesY[2];
+	                    DesX[3] = DesX[2]+1; DesY[3] = DesY[2] - 1;
+	                    LimDes = 3;
+	                    //****
+	                    GiuX[1] = GiuX[1]; GiuY[1] = GiuY[1]+2;
+	                    GiuX[2] = GiuX[2]; GiuY[2] = GiuY[2];
+	                    LimGiu = 2;
+	                }
+	            } else {
+	                //da mettere controllo se puo ruotare
+	                if ((M[PezX[4]][PezY[1]] == 0) && (M[PezX[2]][PezY[2]-1] == 0)) {
+	                    orientamento = 1;
+	                    /*prima
+                          #
+                        # #
+                        #
+                        dopo 
+                        # #
+                          # #
+                        */
+	                    for (ii = 1; ii <= LimPez; ii++) { M[PezX[ii]][PezY[ii]] = 0; }
+	                    PezX[1]++; PezX[2] = PezX[2]; PezX[3] = PezX[3] + 1; PezX[4] = PezX[4];
+	                    PezY[1] = PezY[1] - 2; PezY[2] = PezY[2]; PezY[3] = PezY[3]-1; PezY[4] = PezY[4]+1;
+	                    for (ii = 1; ii <= LimPez; ii++) { M[PezX[ii]][PezY[ii]] = color; }
+	                    //*****************
+	                    SinX[1] = SinX[2]; SinY[1] = SinY[1] - 1;
+	                    SinX[2] = SinX[3]; SinY[2] = SinY[3];
+	                    LimSin = 2;
+	                    //****
+	                    DesX[1] = DesX[1] + 1; DesY[1] = DesY[1] - 1;
+	                    DesX[2] = DesX[2] + 1; DesY[2] = DesY[2];
+	                    LimDes = 2;
+	                    //****
+	                    GiuX[1] = GiuX[1]; GiuY[1] = GiuY[1] - 2;
+	                    GiuX[2] = GiuX[2]; GiuY[2] = GiuY[2];
+	                    GiuX[3] = GiuX[2]; GiuY[3] = GiuY[2]+1;
+	                    LimGiu = 3;
+	                }
+	            }
+	            //***************************************************************
+	            //***************************************************************
+	            //******************* NUOVA FORMA *******************************
+	        } else if (forma == 7) {
+	            if (orientamento == 1) {
+	                if ((M[PezX[1]][PezY[1]-1] == 0) && (M[PezX[1]-1][PezY[1]-1] == 0)) {
+	                    /*prima
+                          # #
+                        # #
+                        dopo 
+                        #
+                        # #
+                          #
+                        */
+	                    orientamento = 2;
+	                    var ii, jj;
+	                    for (ii = 1; ii <= LimPez; ii++) { M[PezX[ii]][PezY[ii]] = 0; }
+	                    //*** cambio coordinate pezzo ******
+	                    PezX[1]--; PezX[2] = PezX[2]; PezX[3] = PezX[3] - 1; PezX[4] = PezX[4];
+	                    PezY[1] = PezY[1] - 1; PezY[2] = PezY[2]-2; PezY[3] = PezY[3] + 1; PezY[4] = PezY[4];
+	                    for (ii = 1; ii <= LimPez; ii++) { M[PezX[ii]][PezY[ii]] = color; }
+	                    //*********
+	                    SinX[1] = SinX[1] - 1; SinY[1] = SinY[1] - 1;
+	                    SinX[2] = SinX[2] - 1; SinY[2] = SinY[2];
+	                    SinX[3] = SinX[2] + 1; SinY[3] = SinY[2]+1;
+	                    LimSin = 3;
+	                    //****
+	                    DesX[1] = DesX[1] - 1; DesY[1] = DesY[1] - 2;
+	                    DesX[2] = DesX[2] - 1; DesY[2] = DesY[2];
+	                    DesX[3] = DesX[2] + 1; DesY[3] = DesY[2];
+	                    LimDes = 3;
+	                    //****
+	                    GiuX[1] = PezX[4]; GiuY[1] = PezY[2];
+	                    GiuX[2] = PezX[4]+1; GiuY[2] = PezY[4];
+	                    LimGiu = 2;
+	                }
+	            } else {
+	                //da mettere controllo se puo ruotare
+	                if ((M[PezX[4]][PezY[2]] == 0) && (M[PezX[2]][PezY[3] + 1] == 0)) {
+	                    orientamento = 1;
+	                    /*prima
+                        #
+                        # #
+                          #
+                        dopo 
+                          # #
+                        # #
+                        */
+	                    for (ii = 1; ii <= LimPez; ii++) { M[PezX[ii]][PezY[ii]] = 0; }
+	                    PezX[1]++; PezX[2] = PezX[2]; PezX[3] = PezX[3] + 1; PezX[4] = PezX[4];
+	                    PezY[1] = PezY[1] + 1; PezY[2] = PezY[2]+2; PezY[3] = PezY[3] - 1; PezY[4] = PezY[4];
+	                    for (ii = 1; ii <= LimPez; ii++) { M[PezX[ii]][PezY[ii]] = color; }
+	                    //*****************
+	                    SinX[1] = SinX[2]; SinY[1] = SinY[1] + 1;
+	                    SinX[2] = SinX[3]; SinY[2] = SinY[2];
+	                    LimSin = 2;
+	                    //****
+	                    DesX[1] = DesX[1] + 1; DesY[1] = DesY[1] + 2;
+	                    DesX[2] = DesX[3]; DesY[2] = DesY[3];
+	                    LimDes = 2;
+	                    //****
+	                    GiuX[1] = GiuX[1]; GiuY[1] = GiuY[1] + 2;
+	                    GiuX[2] = GiuX[2]; GiuY[2] = GiuY[2]-1;
+	                    GiuX[3] = GiuX[2]; GiuY[3] = GiuY[2] + 1;
+	                    LimGiu = 3;
+	                }
+	            }
+	            //***************************************************************
+	            //***************************************************************
+	            //******************* NUOVA FORMA *******************************
+	        } if (forma == 4) {
+	            if (orientamento == 1) {
+	                if ((M[PezX[1]][PezY[2]+1] == 0) && (M[PezX[3]][PezY[3]+1] == 0) && (M[PezX[3]][PezY[3]-1] == 0)) {
+	                    /*prima
+                        # #
+                          #
+                          #
+                        dopo 
+                            #
+                        # # #
+                        */
+	                    orientamento = 2;
+	                    var ii, jj;
+	                    for (ii = 1; ii <= LimPez; ii++) { M[PezX[ii]][PezY[ii]] = 0; }
+	                    //*** cambio coordinate pezzo ******
+	                    PezX[1]=PezX[1]; PezX[2]=PezX[2]+1; PezX[3]=PezX[3]; PezX[4] = PezX[4]-1;
+	                    PezY[1]=PezY[1]+2; PezY[2]=PezY[2]-1; PezY[3]=PezY[3]; PezY[4] = PezY[4]+1;
+	                    for (ii = 1; ii <= LimPez; ii++) { M[PezX[ii]][PezY[ii]] = color; }
+	                    //*********
+	                    SinX[1]=SinX[1]; SinY[1]+=2;
+	                    SinX[2]=SinX[2]; SinY[2]--;
+	                    LimSin = 2;
+	                    //****
+	                    DesX[1]=DesX[1]; DesY[1]++;
+	                    DesX[2]=DesX[2]; DesY[2] = DesY[2]+1;
+	                    LimDes = 2;
+	                    //****
+	                    GiuX[1] = GiuX[1] + 1; GiuY[1] = GiuY[1];
+	                    GiuX[2] = GiuX[2]-1; GiuY[2] = GiuY[2];
+	                    GiuX[3] = GiuX[2]; GiuY[3] = GiuY[2]+1;
+	                    LimGiu = 3;
+	                }
+	            } else if (orientamento == 2) {
+	                //da mettere controllo se puo ruotare
+	                if ((M[PezX[1]][PezY[3]] == 0) && (M[PezX[3] + 1][PezY[3]] == 0) && (M[PezX[4] + 1][PezY[4]] == 0)) {
+	                    orientamento = 3;
+	                    /*prima
+                            #
+                        # # #
+                        dopo 
+                          #
+                          #
+                          # #
+                        */
+	                    for (ii = 1; ii <= LimPez; ii++) { M[PezX[ii]][PezY[ii]] = 0; }
+	                    PezX[1]=PezX[1]; PezX[2] = PezX[2]; PezX[3] = PezX[3]+1; PezX[4] = PezX[4]+1;
+	                    PezY[1] = PezY[1] - 1; PezY[2] = PezY[2]+1; PezY[3] = PezY[3]; PezY[4]=PezY[4];
+	                    for (ii = 1; ii <= LimPez; ii++) { M[PezX[ii]][PezY[ii]] = color; }
+	                    //*****************
+	                    SinX[1] = SinX[1]; SinY[1] = SinY[1] - 1;
+	                    SinX[2] = SinX[2]; SinY[2] = SinY[2] + 1;
+	                    SinX[3] = SinX[2]+1; SinY[3] = SinY[2];
+	                    LimSin = 3;
+	                    //****
+	                    DesX[1] = DesX[1]; DesY[1] = DesY[1]-1;
+	                    DesX[2] = DesX[2]; DesY[2] = DesY[2] - 1;
+	                    DesX[3] = DesX[2]+1; DesY[3] = DesY[2] + 1;
+	                    LimDes = 3;
+	                    //****
+	                    GiuX[1] = GiuX[1]+1; GiuY[1]++;
+	                    GiuX[2] = GiuX[2] + 1; GiuY[2] = GiuY[2]+1;
+	                    LimGiu = 2;
+	                }
+	            } else if (orientamento == 3) {
+	                //da mettere controllo se puo ruotare
+	                if ((M[PezX[2]][PezY[2]-1] == 0) && (M[PezX[2]][PezY[4]] == 0) && (M[PezX[3]][PezY[3]-1] == 0)) {
+	                    orientamento = 4;
+	                    /*prima
+                          #
+                          #
+                          # #
+                        dopo 
+                        # # #
+                        #
+                        */
+	                    for (ii = 1; ii <= LimPez; ii++) { M[PezX[ii]][PezY[ii]] = 0; }
+	                    PezX[1]++; PezX[2] = PezX[2]; PezX[3] = PezX[3]-1; PezX[4] = PezX[4];
+	                    PezY[1] = PezY[1]-1; PezY[2] = PezY[2]; PezY[3] = PezY[3] + 1; PezY[4]-=2;
+	                    for (ii = 1; ii <= LimPez; ii++) { M[PezX[ii]][PezY[ii]] = color; }
+	                    //*****************
+	                    SinX[1] = SinX[1] + 1; SinY[1] = SinY[1]-1;
+	                    SinX[2] = SinX[2] + 1; SinY[2] = SinY[2] - 1;
+	                    LimSin = 2;
+	                    //****
+	                    DesX[1] = DesX[1] + 1; DesY[1] = DesY[1] + 1;
+	                    DesX[2] = DesX[2]+1; DesY[2] = DesY[2]-1;
+	                    LimDes = 2;
+	                    //****
+	                    GiuX[1] = GiuX[1]-1; GiuY[1] = GiuY[1];
+	                    GiuX[2] = GiuX[2]-1; GiuY[2] = GiuY[2];
+	                    GiuX[3] = GiuX[1]+1; GiuY[3] = GiuY[1] - 1;
+	                    LimGiu = 3;
+	                }
+	            } else if (orientamento == 4) {
+	                //da mettere controllo se puo ruotare
+	                if ((M[PezX[1] - 1][PezY[1]] == 0) && (M[PezX[2] - 1][PezY[2]] == 0) && (M[PezX[4]][PezY[2]] == 0)) {
+	                    orientamento = 1;
+	                    /*prima
+                        # # #
+                        #
+                        dopo 
+                        # #
+                          #
+                          #
+                        */
+	                    for (ii = 1; ii <= LimPez; ii++) { M[PezX[ii]][PezY[ii]] = 0; }
+	                    PezX[1]--; PezX[2] = PezX[2] - 1; PezX[3] = PezX[3]; PezX[4] = PezX[4];
+	                    PezY[1]=PezY[1]; PezY[2] = PezY[2]; PezY[3] = PezY[3]-1; PezY[4]++;
+	                    for (ii = 1; ii <= LimPez; ii++) { M[PezX[ii]][PezY[ii]] = color; }
+	                    //*****************
+	                    SinX[1] = SinX[1] - 1; SinY[1] = SinY[1];
+	                    SinX[2] = SinX[2]-1; SinY[2] = SinY[2]+1;
+	                    SinX[3] = SinX[2]+1; SinY[3] = SinY[2];
+	                    LimSin = 3;
+	                    //****
+	                    DesX[1] = DesX[1]-1; DesY[1] = DesY[1]-1;
+	                    DesX[2] = DesX[2] - 1; DesY[2] = DesY[2] + 1;
+	                    DesX[3] = DesX[2]+1; DesY[3] = DesY[2];
+	                    LimDes = 3;
+	                    //****
+	                    GiuX[1] = GiuX[1] - 1; GiuY[1] = GiuY[1] - 1;
+	                    GiuX[2] = GiuX[2]+1; GiuY[2] = GiuY[2] - 1;
+	                    LimGiu = 2;
+	                }
+	            }
+	            //***************************************************************
+	            //***************************************************************
+	            //******************* NUOVA FORMA *******************************
+	        } else if (forma == 5) {
+	            if (orientamento == 1) {
+	                if ((M[PezX[3]][PezY[2]] == 0) && (M[PezX[4]][PezY[2]] == 0) && (M[PezX[3]][PezY[3] - 1] == 0)) {
+	                    /*prima
+                        # #
+                        #
+                        #
+                        dopo 
+                        # # #
+                            #
+                        */
+	                    orientamento = 2;
+	                    var ii, jj;
+	                    for (ii = 1; ii <= LimPez; ii++) { M[PezX[ii]][PezY[ii]] = 0; }
+	                    //*** cambio coordinate pezzo ******
+	                    PezX[1] = PezX[1]+1; PezX[2] = PezX[2] + 1; PezX[3] = PezX[3]; PezX[4] = PezX[4];
+	                    PezY[1] = PezY[1] - 1; PezY[2] = PezY[2] - 1; PezY[3] = PezY[3]+1; PezY[4] = PezY[4] + 1;
+	                    for (ii = 1; ii <= LimPez; ii++) { M[PezX[ii]][PezY[ii]] = color; }
+	                    //*********
+	                    SinX[1] = PezX[1]; SinY[1] = PezY[1]-1;
+	                    SinX[2] = PezX[4]; SinY[2]=PezY[2];
+	                    LimSin = 2;
+	                    //****
+	                    DesX[1] = DesX[1]+1; DesY[1]=DesY[1];
+	                    DesX[2] = DesX[2]+1; DesY[2] = DesY[2] + 1;
+	                    LimDes = 2;
+	                    //****
+	                    GiuX[1] = GiuX[1] + 1; GiuY[1] = GiuY[1]-2;
+	                    GiuX[2] = GiuX[2] - 1; GiuY[2] = GiuY[2];
+	                    GiuX[3] = GiuX[2]+1; GiuY[3] = GiuY[2] + 1;
+	                    LimGiu = 3;
+	                }
+	            } else if (orientamento == 2) {
+	                //da mettere controllo se puo ruotare
+	                if ((M[PezX[1]-1][PezY[2]] == 0) && (M[PezX[4]][PezY[1]] == 0) && (M[PezX[4]][PezY[2]] == 0)) {
+	                    orientamento = 3;
+	                    /*prima
+                        # # #
+                            #
+                        dopo 
+                          #
+                          #
+                        # #
+                        */
+	                    for (ii = 1; ii <= LimPez; ii++) { M[PezX[ii]][PezY[ii]] = 0; }
+	                    PezX[1] = PezX[1]-1; PezX[2] = PezX[2]; PezX[3] = PezX[3] + 1; PezX[4] = PezX[4];
+	                    PezY[1] = PezY[1] + 1; PezY[2] = PezY[2]; PezY[3] = PezY[3]-2; PezY[4] = PezY[4]-1;
+	                    for (ii = 1; ii <= LimPez; ii++) { M[PezX[ii]][PezY[ii]] = color; }
+	                    //*****************
+	                    SinX[1] = SinX[1]-1; SinY[1] = SinY[1] + 1;
+	                    SinX[2] = SinX[2]-1; SinY[2] = SinY[2] - 1;
+	                    SinX[3] = SinX[2] + 1; SinY[3] = SinY[2]-1;
+	                    LimSin = 3;
+	                    //****
+	                    DesX[1] = DesX[1]-1; DesY[1] = DesY[1] - 1;
+	                    DesX[2] = DesX[2]-1; DesY[2] = DesY[2] - 1;
+	                    DesX[3] = DesX[2] + 1; DesY[3] = DesY[2];
+	                    LimDes = 3;
+	                    //****
+	                    GiuX[1] = GiuX[1] + 1; GiuY[1]=GiuY[1];
+	                    GiuX[2] = GiuX[2] + 1; GiuY[2]=GiuY[2];
+	                    LimGiu = 2;
+	                }
+	            } else if (orientamento == 3) {
+	                //da mettere controllo se puo ruotare
+	                if ((M[PezX[1]][PezY[3]] == 0) && (M[PezX[2]][PezY[3]] == 0) && (M[PezX[2]][PezY[2] + 1] == 0)) {
+	                    orientamento = 4;
+	                    /*prima
+                          #
+                          #
+                        # #
+                        dopo 
+                        #
+                        # # #
+                        */
+	                    for (ii = 1; ii <= LimPez; ii++) { M[PezX[ii]][PezY[ii]] = 0; }
+	                    PezX[1]=PezX[1]; PezX[2] = PezX[2]; PezX[3] = PezX[3] - 1; PezX[4] = PezX[4]-1;
+	                    PezY[1] = PezY[1] - 1; PezY[2] = PezY[2]-1; PezY[3] = PezY[3]+1; PezY[4]++;
+	                    for (ii = 1; ii <= LimPez; ii++) { M[PezX[ii]][PezY[ii]] = color; }
+	                    //*****************
+	                    SinX[1] = SinX[1]; SinY[1] = SinY[1] - 1;
+	                    SinX[2] = SinX[2]; SinY[2] = SinY[2] - 1;
+	                    LimSin = 2;
+	                    //****
+	                    DesX[1] = DesX[1]; DesY[1] = DesY[1] - 1;
+	                    DesX[2] = DesX[2]; DesY[2] = DesY[2] + 1;
+	                    LimDes = 2;
+	                    //****
+	                    GiuX[1] = GiuX[1] - 1; GiuY[1] = GiuY[1];
+	                    GiuX[2] = GiuX[2] - 1; GiuY[2] = GiuY[2];
+	                    GiuX[3] = GiuX[2]; GiuY[3] = GiuY[2] + 1;
+	                    LimGiu = 3;
+	                }
+	            } else if (orientamento == 4) {
+	                //da mettere controllo se puo ruotare
+	                if ((M[PezX[1]][PezY[3]] == 0) && (M[PezX[1]][PezY[4]] == 0) && (M[PezX[2]+1][PezY[3]] == 0)) {
+	                    orientamento = 1;
+	                    /*prima
+                        #
+                        # # #
+                        dopo 
+                          # #
+                          #
+                          #
+                        */
+	                    for (ii = 1; ii <= LimPez; ii++) { M[PezX[ii]][PezY[ii]] = 0; }
+	                    PezX[1]=PezX[1]; PezX[2] = PezX[2] - 1; PezX[3] = PezX[3]; PezX[4] = PezX[4]+1;
+	                    PezY[1] = PezY[1]+1; PezY[2] = PezY[2]+2; PezY[3] = PezY[3]; PezY[4]--;
+	                    for (ii = 1; ii <= LimPez; ii++) { M[PezX[ii]][PezY[ii]] = color; }
+	                    //*****************
+	                    SinX[1] = SinX[1]; SinY[1] = SinY[1]+1;
+	                    SinX[2] = SinX[2]; SinY[2] = SinY[2] + 1;
+	                    SinX[3] = SinX[2] + 1; SinY[3] = SinY[2];
+	                    LimSin = 3;
+	                    //****
+	                    DesX[1] = DesX[1]; DesY[1] = DesY[1] + 2;
+	                    DesX[2] = DesX[2]; DesY[2] = DesY[2] - 1;
+	                    DesX[3] = DesX[2] + 1; DesY[3] = DesY[2];
+	                    LimDes = 3;
+	                    //****
+	                    GiuX[1] = GiuX[1] - 1; GiuY[1] = GiuY[1] + 2;
+	                    GiuX[2] = GiuX[2] + 1; GiuY[2] = GiuY[2];
+	                    LimGiu = 2;
+	                }
+	            }
+	            //***************************************************************
+	            //***************************************************************
+	            //******************* FINE FORME *******************************
+		    }
+	        }
+	    }
+	    //**********************************************************************************
+	    //********************* FINE GIRA BLOCCHI *****************************************************
+	    function Immagini() {
+	        for (i = 1; i <= Rig; i++) {
+	            for (j = 1; j <= Col; j++) {
+	                document.getElementById(i + "#" + j).src = "image/"+M[i][j]+".png";
+	            }
+	        }
+	    }
+
+	</script>
+</head>
+<body onkeydown="Tastierino()" onkeyup="if((mov==40)||(mov==83)){Velocita=Vel;}">
+</body>
+</html>

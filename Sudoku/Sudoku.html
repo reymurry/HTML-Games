@@ -1,0 +1,545 @@
+<html>
+<head>
+	<style type="text/css">
+
+	    .divTitolo {
+	        position:absolute;
+            margin-left:580;
+        }
+
+	    .divCampoSudoku {
+	        position:absolute;
+            margin-top:80;
+            margin-left:490;
+        }
+	/*.ricomincia
+	{
+		font-family:comic sans MS;
+	}*/
+
+	.bottone{
+		height:40;
+		width:40;
+		font-size:20;
+	}
+
+	.verifica
+	{
+        position:absolute;
+        border-radius:40px;
+		height:120;
+		width:120;
+        margin-top:480;
+        margin-left:760;
+		color:#1dea14;
+		font-size:15;
+		font-family:comic sans MS;
+		background-color:red;
+        font-weight:bolder;
+	}
+
+	    .AiutoButton {
+	        position:absolute;
+            border-radius:40px;
+	        margin-left:473;
+            margin-top:476;
+            height:120;
+            width:120;
+            background-color:yellow;
+            font-size:15;
+            color:blue;
+            font-family:'Comic Sans MS';
+            font-weight:bold;
+        }
+        
+	    .selectDif {
+            position:absolute;
+	        margin-left:618;
+            margin-top:540;
+            border-radius:20px;
+            height:70;
+            width:123;
+            color:red;
+            background-color:#1dea14;
+            font-weight:bold;
+            font-size:15;
+            text-align:center;
+            font-family:'Comic Sans MS';
+        }
+
+	    .AvvioButton {
+            position:absolute;
+            border-radius:20px;
+	        margin-left:618;
+            margin-top:480;
+            height:60;
+            width:120;
+            background-color:#1dea14;
+            font-size:15;
+            color:red;
+            font-family:'Comic Sans MS';
+            font-weight:bold;
+        }
+
+	    div {
+	        border-radius:20px;
+            border-width:5px;
+            border-color:black;
+        }
+
+	    .divInf {
+	        position:absolute;
+            margin-left:900;
+            margin-top:150;
+            border-width:5;
+            height:240;
+            width:150;
+            border-color:black;
+            background-color:#fbe701;
+        }
+
+	    .cButtonSave {
+	        position:absolute;
+            border-radius:20px;
+	        margin-left:25;
+            margin-top:180;
+            height:40;
+            width:100;
+            background-color:blue;
+            font-size:15;
+            color:yellow;
+            font-family:'Comic Sans MS';
+            font-weight:bold;
+        }
+
+	    .cSesCor1 {
+	        position:absolute;
+            color:blue;
+            margin-top:0;
+            margin-left:25px;
+            font-family:'Comic Sans MS';
+            font-weight:bold;
+            font-size:17;
+        }
+
+        .cSesCor2 {
+	        position:absolute;
+            color:blue;
+            margin-top:20px;
+            margin-left:25px;
+            font-family:'Comic Sans MS';
+            font-weight:bold;
+            font-size:17;
+        }
+
+        .cDifCor {
+	        position:absolute;
+            color:blue;
+            margin-top:80px;
+            margin-left:43px;
+            font-family:'Comic Sans MS';
+            font-weight:bold;
+            font-size:17;
+        }
+
+        .cTempo {
+	        position:absolute;
+            color:blue;
+            margin-top:140px;
+            margin-left:42px;
+            font-family:'Comic Sans MS';
+            font-weight:bold;
+            font-size:17;
+        }
+	</style>
+		
+	<script type="text/javascript">
+	    var ore, minuti, secondi;
+	    var haiperso;
+	    var difficolta;
+	    var NumEst;
+	    var verifiche_rimaste;
+	    var aiuti_rimasti;
+	    var start = 0;
+		var ind_rig=0;
+		var ind_col=0;
+		//var AUvictory = new Audio("victoryff.mp4");
+
+		var matrice_campo = new Array();
+		var matrice_auto = new Array();
+		var matrice_giusti = new Array();
+		for (var i = 0; i <= 8; i++) {
+		    matrice_campo[i] = new Array();
+		    matrice_auto[i] = new Array();
+		    matrice_giusti[i] = new Array();
+		}
+	    //*******
+		document.write('<div class="divCampoSudoku"><table>');
+		for (var rig = 0; rig <= 8; rig += 3) {
+		    document.write('<tr>');
+		    for (var col = 0; col <= 8; col += 3) {
+		        document.write('<td>');
+		        document.write('<table border="0" cellspacing="0" cellpadding="0">');
+		        for (var i = rig; i <= rig + 2; i++) {
+		            document.write('<tr>');
+		            for (var j = col; j <= col+2; j++) {
+		                document.write('<td><input id="' + i + "" + j + '"" type="button" value="" onClick="DisAbilita(); ind_rig=' + i + '; ind_col=' + j + '; Abilita()" class="bottone"></input></td>');
+		            }
+		            document.write('</tr>');
+		        }
+		        document.write('</table>');
+		        document.write('</td>');
+		    }
+		    document.write('</tr>');
+		}
+		document.write('</table></div>');
+	    //*******
+		document.write('<div class="divInf"><font class="cSesCor1">SESSIONE</font><font class="cSesCor2">CORRENTE</font><p class="cDifCor" id="difCor">FACILE</p><p class="cTempo" id="Tempo">0:00:00</p></div>');
+		document.write('<form name="form"><select name="DIFFICOLTA" size="3" class="selectDif"><option value="FACILE" id="FACILE">FACILE<option value="MEDIO" id="MEDIO" SELECTED>MEDIO<option value="DIFFICILE" id="DIFFICILE">DIFFICILE</select><input type="button" value="AVVIA" class="AvvioButton" onclick="Setup()"></input>');
+		document.write('<input type="button" id="idVerificaButton" value="VERIFICA" class="verifica" onclick="Verifica()"></input><input type="button" id="idAiutoButton" value="AIUTO" class="AiutoButton" onclick="Aiuto()"></input></form>');
+		setTimeout("Tempo()", 1000);
+	    //*******
+		function Tempo() {
+		    if (secondi <= 58) {
+		        secondi+=1;
+		    } else {
+		        secondi = 0;
+		        if (minuti <= 58) {
+		            minuti++;
+		        } else {
+		            ore++;
+		            minuti = 0;
+		        }
+		    }
+		    if (minuti <= 9) {
+		        if (secondi <= 9) {
+		            document.getElementById("Tempo").innerHTML = ore + ":" + "0" + minuti + ":0" + secondi;
+		        } else {
+		            document.getElementById("Tempo").innerHTML = ore + ":" + "0" + minuti + ":" + secondi;
+		        }
+		    } else {
+		        if (secondi <= 9) {
+		            document.getElementById("Tempo").innerHTML = ore + ":" + minuti + ":0" + secondi;
+		        } else {
+		            document.getElementById("Tempo").innerHTML = ore + ":" + minuti + ":" + secondi;
+		        }
+		    }
+		    if (!haiperso) {
+		        setTimeout("Tempo()", 1000);
+		    }
+        }
+
+		function NumeroValido(x, y, Num){
+		    var valido=true;
+		    for (var i = 0; i <= 8; i++) {
+		        if (matrice_auto[i][y] == Num) {
+		            valido = false;
+		        }
+		        if (matrice_auto[x][i] == Num) {
+		            valido = false;
+		        }
+		    }
+		    var quad_i, quad_j;
+		    if (valido) {
+		        if (x <= 2) {
+		            if (y <= 2) {
+		                quad_i = 0; quad_j = 0;
+		            } else if (y <= 5) {
+		                quad_i = 0; quad_j = 3;
+		            } else {
+		                quad_i = 0; quad_j = 6;
+		            }
+		        } else if (x <= 5) {
+		            if (y <= 2) {
+		                quad_i = 3; quad_j = 0;
+		            } else if (y <= 5) {
+		                quad_i = 3; quad_j = 3;
+		            } else {
+		                quad_i = 3; quad_j = 6;
+		            }
+		        } else {
+		            if (y <= 2) {
+		                quad_i = 6; quad_j = 0;
+		            } else if (y <= 5) {
+		                quad_i = 6; quad_j = 3;
+		            } else {
+		                quad_i = 6; quad_j = 6;
+		            }
+		        }
+		        var i=quad_i, j=quad_j;
+		        while ((valido) && (i <= quad_i + 2)) {
+		            j = quad_j;
+		            while ((valido) && (j <= quad_j + 2)) {
+		                if (matrice_auto[i][j] == Num) {
+		                    valido = false;
+		                } else {
+		                    j++;
+		                }
+		            }
+		            i++;
+		        }
+		        i--;
+		    }
+		    return valido;
+		}
+
+		var SudokuFieldFill = false;
+		//var VetNum = new Array(1, 2, 3, 4, 5, 6, 7, 8, 9);
+
+		function RiempiVet(VetNum) {
+		    var i=0;
+		    var q;
+		    var presente;
+		    while ( i <= 8 ) {
+		        q = Math.floor(Math.random() * 9 + 1);
+		        presente = true;
+		        for (var j = 0; j <= i; j++) {
+		            if (VetNum[j] == q) {
+		                presente = false;
+		            }
+		        }
+		        if (presente) {
+		            VetNum[i] = q;
+		            i++;
+		        }
+		    }
+		}
+
+		function Auto_sudoku(x, y, Num){
+		    var chiamate = 0;
+		    var VetNum = new Array();
+		    RiempiVet(VetNum);
+		    do {
+		        SudokuFieldFill = false;
+		        Num = VetNum[chiamate];//Math.floor(Math.random() * 9 + 1);
+		        chiamate++;
+		        if (NumeroValido(x, y, Num)) {
+		            matrice_auto[x][y] = Num;
+		            //alert("messo " + Num + "in " + x + " / " + y);
+		            if ((x >= 8) && (y >= 8)) {
+		                SudokuFieldFill = true;
+		            } else {
+		                var x1 = x, y1 = y;
+		                if (y <= 7) {
+		                    Auto_sudoku(x1, y1 + 1, Num);
+		                } else {
+		                    Auto_sudoku(x1 + 1, 0, Num);
+		                }
+		                if (!SudokuFieldFill) {
+		                    matrice_auto[x][y] = 0;
+		                    //alert("tolto " + Num + "da " + x + " / " + y);
+		                }
+		            }
+		        }
+		    } while ((!SudokuFieldFill) && (chiamate<=8));
+		}
+	
+		function DisAbilita() {
+		    if (!matrice_giusti[ind_rig][ind_col]) {
+		        document.getElementById(ind_rig + "" + ind_col).style.backgroundColor = "rgba(211, 202, 202, 0.98)";
+		    }
+		}
+
+		function Abilita() {
+		    if (!matrice_giusti[ind_rig][ind_col]) {
+		        document.getElementById(ind_rig + "" + ind_col).style.backgroundColor = "yellow";
+		    }
+		}
+
+		function Aiuto() {
+		    if ((!matrice_giusti[ind_rig][ind_col]) && (aiuti_rimasti>=1)){
+		        matrice_campo[ind_rig][ind_col] = matrice_auto[ind_rig][ind_col];
+		        matrice_giusti[ind_rig][ind_col] = true;
+		        document.getElementById(ind_rig + "" + ind_col).style.backgroundColor = "4cff00";
+		        document.getElementById(ind_rig + "" + ind_col).value = matrice_auto[ind_rig][ind_col];
+		        aiuti_rimasti--;
+		        document.getElementById("idAiutoButton").value = "AIUTO (" + aiuti_rimasti + ")";
+		    }
+		}
+
+		function Verifica() {
+		    var error = false;
+			//if(verifiche_rimaste>=1){
+			    for (var i = 0; i <= 8; i++) {
+			        for (var j = 0; j <= 8; j++) {
+			            if (matrice_auto[i][j] == matrice_campo[i][j]) {
+			                if (document.getElementById(i + "" + j).style.backgroundColor != "4cff00") {
+			                    NumEst++;
+			                }
+			                document.getElementById(i + "" + j).style.backgroundColor = "4cff00";
+			                matrice_giusti[i][j] = true;
+			            } else if ((matrice_auto[i][j] != matrice_campo[i][j]) && (matrice_campo[i][j] != 0) && (matrice_campo[i][j] != "")) {
+			                error = true;
+			                document.getElementById(i + "" + j).style.backgroundColor = "red";
+			            } else {
+			                document.getElementById(i + "" +j).style.backgroundColor = "rgba(211, 202, 202, 0.98)";
+			            }
+			        }
+			    }
+			    //if (error) {
+			        verifiche_rimaste--;
+			    //}
+			    document.getElementById("idVerificaButton").value = "VERIFICA (" + verifiche_rimaste + ")";
+			//}
+			if ( verifiche_rimaste == 0 ) {
+			    Vittoria();
+			}
+		}
+
+	    //********  funzione random:   x=Math.floor(Math.random()*9+1);
+
+		function StampaCampo() {
+		    var x, y, i=1;
+		    while ( i <= NumEst ) {
+		        x = Math.floor(Math.random() * 9);
+		        y = Math.floor(Math.random() * 9);
+		        if (document.getElementById(x + "" + y).value == "") {
+		            document.getElementById(x + "" + y).value = matrice_auto[x][y];
+		            matrice_campo[x][y] = matrice_auto[x][y];
+		            i++;
+		        }
+		    }
+		}
+
+		function Vittoria() {
+		    var ConChek = 0, Con = 0;
+		        for (var i = 0; i <= 8; i++) {
+		            for (var j = 0; j <= 8; j++) {
+		                if (matrice_auto[i][j] == matrice_campo[i][j])
+		                    ConChek++;
+		                if ((matrice_campo[i][j] == "") || (matrice_campo[i][j] == 0))
+		                    Con++;
+		            }
+		        }
+		        if (Con == 0) {
+		            if (ConChek == 81) {
+		                haiperso = 1;
+		                AUvictory.play();
+		                alert("HAI VINTO!");
+		            } else {
+		                haiperso = 1;
+		                window.alert("HAI PERSO!");
+		            }
+		        }
+		}
+
+		function Game() {
+		    for (var i = 0; i <= 8; i++) {
+		        for (var j = 0; j <= 8; j++) {
+		            matrice_auto[i][j] = "";
+		            matrice_campo[i][j] = "";
+		            matrice_giusti[i][j] = false;
+		        }
+		    }
+		    for (var i = 0; i <= 8; i++) {
+		        for (var j = 0; j <= 8; j++) {
+		            document.getElementById(i + "" + j).value = "";
+		        }
+		    }
+		    Auto_sudoku(0, 0, 0);
+		    StampaCampo();
+		    Verifica();
+		}
+
+		function Setup() {
+		    if (document.form.DIFFICOLTA.selectedIndex == 0) {
+		        verifiche_rimaste = 6;
+		        aiuti_rimasti = 5;
+		        NumEst = 50;
+		        document.getElementById("difCor").innerHTML = "FACILE";
+		        difficolta = "FACILE";
+		    } else if (document.form.DIFFICOLTA.selectedIndex == 1) {
+		        verifiche_rimaste = 4;
+		        aiuti_rimasti = 3;
+		        NumEst = 40;
+		        document.getElementById("difCor").innerHTML = "MEDIO";
+		        difficolta = "MEDIO";
+		    } else if (document.form.DIFFICOLTA.selectedIndex == 2) {
+		        verifiche_rimaste = 2;
+		        aiuti_rimasti = 0;
+		        NumEst = 30;
+		        document.getElementById("difCor").innerHTML = "DIFFICILE";
+		        difficolta = "DIFFICILE";
+		    }
+		    start = 0;
+		    haiperso = 0;
+		    ore = 0;
+		    minuti = 0;
+		    secondi = 0;
+		    document.getElementById("idVerificaButton").value = "VERIFICA (" + verifiche_rimaste + ")";
+		    document.getElementById("idAiutoButton").value = "AIUTO (" + aiuti_rimasti + ")";
+		    Game();
+		}
+
+		function Tastierino() {
+		    var k = event.keyCode;
+		    //alert(k);
+		    var k1 = k - 48;
+		    var k2 = k - 96;
+		    if (!matrice_giusti[ind_rig][ind_col]) {
+		        if (k1 >= 1 && k1 <= 9) {
+		            matrice_campo[ind_rig][ind_col] = k1;
+		        } else if (k1 == 0) {
+		            matrice_campo[ind_rig][ind_col] = "";
+		        }
+		        if (k2 >= 1 && k2 <= 9) {
+		            matrice_campo[ind_rig][ind_col] = k2;
+		        } else if (k2 == 0) {
+		            matrice_campo[ind_rig][ind_col] = "";
+		        }
+		        if (k == 37) {
+		            DisAbilita();
+		            var j=ind_col-1;
+		            while ((j>=0) && (matrice_giusti[ind_rig][j])){
+		                j -= 1;
+		            }
+		            if (j >= 0) {
+		                ind_col = j;
+		            }
+		            Abilita();
+		        } else if (k == 38) {
+		            DisAbilita();
+		            var i = ind_rig - 1;
+		            while ((i >= 0) && (matrice_giusti[i][ind_col])) {
+		                i -= 1;
+		            }
+		            if (i >= 0) {
+		                ind_rig = i;
+		            }
+		            Abilita();
+		        } else if (k == 39) {
+		            DisAbilita();
+		            var j = ind_col + 1;
+		            while ((j <=8 ) && (matrice_giusti[ind_rig][j])) {
+		                j += 1;
+		            }
+		            if (j <= 8) {
+		                ind_col = j;
+		            }
+		            Abilita();
+		        }else if (k == 40) {
+		            DisAbilita();
+		            var i = ind_rig + 1;
+		            while ((i <= 8) && (matrice_giusti[i][ind_col])) {
+		                i += 1;
+		            }
+		            if (i <= 8) {
+		                ind_rig = i;
+		            }
+		            Abilita();
+		        }
+		        document.getElementById(ind_rig + "" + ind_col).value = matrice_campo[ind_rig][ind_col];
+		        //document.getElementById(ind_rig + "" + ind_col).style.backgroundColor = "rgba(211, 202, 202, 0.98)";
+		    }
+		}
+
+	</script>
+</head>
+<body onLoad="Setup()" onkeyup="Tastierino()">
+<form>
+
+	<div class="divTitolo"><font face="algerian" color="red" size="8">Sudoku!</font></div>
+
+</form>
+</body>
+</html>

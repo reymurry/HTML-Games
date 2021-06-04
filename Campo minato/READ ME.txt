@@ -1,0 +1,12 @@
+HOW TO PLAY
+
+1) Press the left mouse button to reveal the square.
+
+2) Holding down the "Alt" key, the click will put a marker on the square to indicate that there is a mine
+(without revealing the square).
+
+3) Holding down the "Ctrl" key, the click will put a '?' Marker on the square. without revealing the box.
+
+
+
+Have fun!

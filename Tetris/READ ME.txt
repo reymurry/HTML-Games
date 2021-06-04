@@ -1,0 +1,9 @@
+HOW TO PLAY
+
+1) Use the left and right arrows (or A and D) to move the pieces.
+Hold the down arrow (or S) to make the piece go faster.
+Press space to rotate it. Press the up arrow (or W) to pause the game.
+
+
+
+Have fun!

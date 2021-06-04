@@ -1,0 +1,17 @@
+HOW TO PLAY
+
+1) Click on an empty cell to highlight it, as soon as it turns yellow type the number you want to insert on the keypad.
+If you click "0" the number inside the cell will disappear. Any number entered in this way is temporary,
+and must be verified.
+
+2) To start a new game, select the difficulty in the combobox and then press "Avvia".
+
+3) if you have help available, you can select a cell whose content you want to know and press "Aiuto",
+revealing the correct number hidden below.
+
+4) When you want to check the progress so far, press "Verifica", the wrong numbers will be marked in red.
+Warning: Always keep at least 1 "Verifica" available for when you have finished playing!
+
+
+
+Have fun!

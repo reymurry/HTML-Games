@@ -1,0 +1,365 @@
+<html>
+<head>
+	<style type="text/css">
+	    div {
+	        position:absolute;
+        }
+        .titolo {
+	        height:70px;
+            width:200px;
+            margin-left:440px;
+            margin-top:50px;
+            text-align:center;
+            color:red;
+            background-color:#0ff;
+            border-radius:15px;
+        }
+	    .Punteggio {
+            height:70px;
+            width:200px;
+            margin-left:670px;
+            margin-top:50px;
+            text-align:center;
+            color:white;
+	        background-color:black;
+            border-radius:15px;
+        }
+	    .tabella {
+	        margin-left:450px;
+            margin-top:140px;
+        }
+	    p {
+	        font-family:'Comic Sans MS';
+            font-size:20px;
+            font-weight:bold;
+        }
+	</style>
+
+	<script type="text/javascript">
+	    var Rig = 4, Col = 4;
+	    var i, j;
+	    var Punti = 0;
+	    var id;
+	    var M = new Array();
+	    var MApp = new Array();
+	    for(i=1;i<=Rig;i++){
+	        M[i] = new Array();
+	        MApp[i] = new Array();
+	    }
+	    document.write('<center><div class="titolo"><p id="perso">Cerca di fare 2048!</p></div>');
+	    document.write('<div class="Punteggio"><p id="punti">0</p></div>');
+	    document.write('<div class="tabella"><table cellpadding="0" cellspacing="0" border="1" border-radius="5" bordercolor="grey">');
+	    for (i = 1; i <= Rig; i++) {
+	        document.write('<tr>');
+	        for (j = 1; j <= Col; j++) {
+	            M[i][j] = 0;
+	            document.write('<td><img src="#" id="' + i + '#' + j + '"></td>');
+	        }
+	        document.write('</tr>');
+	    }
+	    document.write('</table></div></center>');
+	    Genera();
+	    Genera();
+	    Immagini();
+
+	    function Immagini() {
+	        for (i = 1; i <= Rig; i++) {
+	            for (j = 1; j <= Col; j++) {
+	                document.getElementById('' + i + '#' + j + '').src = "image/"+M[i][j]+".png";
+	            }
+	        }
+	    }
+
+	    function Genera() {
+	        var ni = Math.floor(Math.random() * Rig + 1);
+	        var nj = Math.floor(Math.random() * Col + 1);
+	        var Con = 0;
+	        while ((M[ni][nj] != 0) && (Con<(Rig*Col)+1)){
+	            Con++;
+	            ni = Math.floor(Math.random() * Rig + 1);
+	            nj = Math.floor(Math.random() * Col + 1);
+	        }
+	        var prob = Math.floor(Math.random() * 6);
+	        if ((Con < (Rig * Col) + 1) && (prob<=4)){
+	            M[ni][nj] = 2;
+	            Immagini();
+	        }else if ((Con < (Rig * Col) + 1) && (prob>4)){
+	            M[ni][nj] = 4;
+	            Immagini();
+	        }
+
+	    }
+
+	    var c = 0;
+	    function Tastierino() {
+	        var Cheat="";
+	        var mov = event.keyCode;
+	        var k, Con;
+	        if (mov == 37) {
+	            for (i = 1; i <= Rig; i++) {
+	                for (j = 1; j <= Col; j++) {
+	                    MApp[i][j] = M[i][j];
+	                }
+	            }
+	            //sinistra
+	            for (i = 1; i <= Rig; i++) {
+	                var VetApp = new Array();
+	                Con = 1;
+	                for (j = 1; j <= Col; j++) {
+	                    if(M[i][j]!=0){
+	                        VetApp[Con] = M[i][j];
+                            Con++
+	                    }
+	                }
+	                for (j = Con; j <= Col; j++){
+	                    VetApp[j] = 0;
+	                }
+	                //************** Aggiorna  **************
+	                j = 1;
+	                while(j<Col){
+	                    if (VetApp[j] == VetApp[j + 1]) {
+	                        VetApp[j] = VetApp[j] * 2;
+	                        //VetApp[j + 1] = 0;
+	                        
+                            for(k=j+1;k<Col;k++){
+                                VetApp[k]=VetApp[k+1];
+                            }
+                            VetApp[Col]=0;
+                            
+	                        if(VetApp[j]!=0){
+	                            Punti = Punti + (VetApp[j] * 10);
+	                            document.getElementById("punti").innerHTML = Punti;
+	                        }
+	                    } else if (VetApp[j] == 0) {
+	                        VetApp[j] = VetApp[j + 1];
+	                        VetApp[j + 1] = 0;
+	                    }
+	                    j++;
+	                }
+	                for (j = 1; j <= Col; j++){
+	                    M[i][j] = VetApp[j];
+	                }
+	            }
+	            //**********************************
+	        } else if (mov == 39) {
+	            for (i = 1; i <= Rig; i++) {
+	                for (j = 1; j <= Col; j++) {
+	                    MApp[i][j] = M[i][j];
+	                }
+	            }
+	            //destra
+	            for (i = 1; i <= Rig; i++) {
+	                var VetApp = new Array();
+	                Con = 1;
+	                for (j = Col; j >=1 ; j--) {
+	                    if (M[i][j] != 0) {
+	                        VetApp[Con] = M[i][j];
+	                        Con++;
+	                    }
+	                }
+	                for (j = Con; j <= Col; j++) {
+	                    VetApp[j] = 0;
+	                }//fino a qui
+	                //************** Aggiorna  **************
+	                j = 1;
+	                while (j < Col) {
+	                    if (VetApp[j] == VetApp[j + 1]) {
+	                        VetApp[j] = VetApp[j] * 2;
+	                        //VetApp[j + 1] = 0;
+	                        
+                            for(k=j+1;k<Col;k++){
+                                VetApp[k]=VetApp[k+1];
+                            }
+                            VetApp[Col]=0;
+                            
+	                        if (VetApp[j] != 0) {
+	                            Punti = Punti + (VetApp[j] * 10);
+	                            document.getElementById("punti").innerHTML = Punti;
+	                        }
+	                    } else if (VetApp[j] == 0) {
+	                        VetApp[j] = VetApp[j + 1];
+	                        VetApp[j + 1] = 0;
+	                    }
+	                    j++;
+	                }
+	                for (j = Col; j >= 1; j--) {
+	                    M[i][j] = VetApp[(Col-j)+1];
+	                }
+	            }
+	            //**********************************
+	        } else if (mov == 38) {
+	            for (i = 1; i <= Rig; i++) {
+	                for (j = 1; j <= Col; j++) {
+	                    MApp[i][j] = M[i][j];
+	                }
+	            }
+	            //su
+	            for (j = 1; j <= Col; j++) {
+	                var VetApp = new Array();
+	                Con = 1;
+	                for (i = 1; i <= Rig; i++) {
+	                    if (M[i][j] != 0) {
+	                        VetApp[Con] = M[i][j];
+	                        Con++;
+	                    }
+	                }
+	                for (i = Con; i <= Rig; i++) {
+	                    VetApp[i] = 0;
+	                }
+	                //************** Aggiorna  **************
+	                i = 1;
+	                while (i < Rig) {
+	                    if (VetApp[i] == VetApp[i + 1]) {
+	                        VetApp[i] = VetApp[i] * 2;
+	                        //VetApp[i + 1] = 0;
+	                        
+                            for(k=i+1;k<Rig;k++){
+                                VetApp[k]=VetApp[k+1];
+                            }
+                            VetApp[Rig]=0;
+                            
+	                        if (VetApp[i] != 0) {
+	                            Punti = Punti + (VetApp[i] * 10);
+	                            document.getElementById("punti").innerHTML = Punti;
+	                        }
+	                    } else if (VetApp[i] == 0) {
+	                        VetApp[i] = VetApp[i + 1];
+	                        VetApp[i + 1] = 0;
+	                    }
+	                    i++;
+	                }
+	                for (i = 1; i <= Rig; i++) {
+	                    M[i][j] = VetApp[i];
+	                }
+	            }
+	            //**********************************
+	        } else if (mov == 40) {
+	            for (i = 1; i <= Rig; i++) {
+	                for (j = 1; j <= Col; j++) {
+	                    MApp[i][j] = M[i][j];
+	                }
+	            }
+	            //giu
+	            for (j = 1; j <= Col; j++) {
+	                var VetApp = new Array();
+	                Con = 1;
+	                for (i = Rig; i >= 1; i--) {
+	                    if (M[i][j] != 0) {
+	                        VetApp[Con] = M[i][j];
+	                        Con++;
+	                    }
+	                }
+	                for (i = Con; i <= Rig; i++) {
+	                    VetApp[i] = 0;
+	                }
+	                //************** Aggiorna  **************
+	                i = 1;
+	                while (i < Rig) {
+	                    if (VetApp[i] == VetApp[i + 1]) {
+	                        VetApp[i] = VetApp[i] * 2;
+	                        //VetApp[i + 1] = 0;
+	                        
+                            for(k=i+1;k<Rig;k++){
+                                VetApp[k]=VetApp[k+1];
+                            }
+                            VetApp[Rig]=0;
+                            
+	                        if (VetApp[i] != 0) {
+	                            Punti = Punti + (VetApp[i] * 10);
+	                            document.getElementById("punti").innerHTML = Punti;
+	                        }
+	                    } else if (VetApp[i] == 0) {
+	                        VetApp[i] = VetApp[i + 1];
+	                        VetApp[i + 1] = 0;
+	                    }
+	                    i++;
+	                }
+	                for (i = Rig; i >= 1; i--) {
+	                    M[i][j] = VetApp[(Rig-i)+1];
+	                }
+	            }
+	            //**********************************
+	        } else if (mov == 65) {
+	            for (i = 1; i <= Rig; i++) {
+	                for (j = 1; j <= Col; j++) {
+	                    MApp[i][j] = M[i][j];
+	                }
+	            }
+	            if (c < 3) {
+	                for (i = 1; i <= Rig; i++) {
+	                    for (j = 1; j <= Col; j++) {
+
+	                        M[i][j] = M[i][j]*256;
+	                    }
+	                }
+	                c = 3;
+	                alert("SEI UN CHEATER!!!");
+	            }
+	        } else {
+	            for (i = 1; i <= Rig; i++) {
+	                for (j = 1; j <= Col; j++) {
+	                    MApp[i][j] = M[i][j];
+	                }
+	            }
+	            c++;
+	        }
+	        var diverso = 0;
+	        for (i = 1; i <= Rig; i++) {
+	            for (j = 1; j <= Col; j++) {
+	                if (MApp[i][j] != M[i][j]) { diverso = 1;}
+	            }
+	        }
+	        if (diverso) { setTimeout("Genera()", 200); }
+	        VittoriaOSconfitta();
+	        Immagini();
+	    }
+
+	    function VittoriaOSconfitta() {
+	        var perso = 1;
+	        var tro0 = 0;
+	        for (i = 1; i < Rig; i++){
+	            for (j = 1; j < Col; j++) {
+	                if(M[i][j]==0){
+	                    tro0 = 1;
+	                }
+	                if(M[i][j]==M[i][j+1]){
+	                    perso = 0;
+	                }else if(M[i][j]==M[i+1][j]){
+	                    perso = 0;
+	                }
+	            }
+	        }
+	        for (i = 1; i < Rig; i++) {
+	            if (M[i][Col] == 0) {
+	                tro0 = 1;
+	            }
+	            if (M[i][Col] == M[i+1][Col]) {
+	                perso = 0;
+	            }
+	        }
+	        for (j = 1; j < Col; j++) {
+	            if (M[Rig][j] == 0) {
+	                tro0 = 1;
+	            }
+	            if (M[Rig][j] == M[Rig][j+1]) {
+	                perso = 0;
+	            }
+	        }
+	        if (M[Rig][Col] == 0) { tro0 = 1;}
+	        if ((tro0 == 0) && (perso == 1)) {
+	            document.getElementById("perso").innerHTML = "HAI PERSO!";
+	        } else {
+	            var Max=2048;
+	            for (i = 1; i <= Rig;i++){
+	                for (j = 1; j <= Col; j++) {
+	                    if (M[i][j] >= Max) { Max = M[i][j]; document.getElementById("perso").innerHTML = "Bravo! Ora fai il "+Max*2+"!"; }
+	                }
+	            }
+	        }
+	    }
+
+	</script>
+</head>
+<body onkeyup="Tastierino()">
+</body>
+</html>
