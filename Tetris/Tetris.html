@@ -3,72 +3,73 @@
 	<title>IL TETRIS By MurryRey97</title>
 	<style type="text/css">
 		.piece{
-			height:30px;
-			width:30px;
+			height:28px;
+			width:28px;
 		}
 	    div {
 	        position:absolute;
         }
 	    .TASTI {
 	        margin-top:10px;
-            margin-left:265px;
+            margin-left:295px;
             border-radius:10px;
             background-color:black;
             height:130px;
             width:200px;
         }
 	    .CAMPO {
-	        margin-top:15px;
+	        margin-top:10px;
             margin-left:500px;
-            border-radius:10px;
+            border-radius:5px;
             background-color:black;
-            height:640px;
-            width:320px;
+            height:588px;
+            width:290px;
         }
 	    .SCORE {
-            margin-top:10px;
-            margin-left:865px;
-            height:100px;
-            width:120px;
+            margin-top:215px;
+            margin-left:795px;
+            height:90px;
+            width:150px;
             border-radius:10px;
             font-family:'Comic Sans MS';
             color:white;
             background-color:black;
         }
         .LIVELLO {
-            margin-top:120px;
-            margin-left:865px;
-            height:100px;
-            width:120px;
-            border-radius:10px;
+            margin-top:310px;
+            margin-left:795px;
+            height:90px;
+            width:70px;
+            border-radius:5px;
             font-family:'Comic Sans MS';
             color:white;
             background-color:black;
         }
         .LINEE {
-            margin-top:230px;
-            margin-left:865px;
-            height:100px;
-            width:120px;
-            border-radius:10px;
+            margin-top:310px;
+            margin-left:870px;
+            height:90px;
+            width:75px;
+            border-radius:5px;
             font-family:'Comic Sans MS';
             color:white;
             background-color:black;
         }
 	    .TABDOPO {
-            height:150px;
+            height:200px;
             width:150px;
-            border-radius:10px;
-	        margin-top:340px;
-            margin-left:850px;
-            border-radius:10px;
+            border-radius:5px;
+	        margin-top:10px;
+            margin-left:795px;
             background-color:black;
+			font-family:'Comic Sans MS';
+            color:white;
         }
         .COMANDI {
             height:130px;
             width:180px;
-	        margin-top:505px;
-            margin-left:850px;
+	        margin-top:145px;
+            margin-left:315px;
             border-radius:10px;
             background-color:black;
             color:white;
@@ -148,7 +149,7 @@
 	    document.write("<div class='LIVELLO'><center><p>LIVELLO</p><p id='livello'>1</p></center></div>");
 	    document.write("<div class='LINEE'><center><p>LINEE</p><p id='linee'>0</p></center></div>");
 	    document.write("<div class='TABDOPO'>");
-	    document.write("<center><table cellspacing='0' cellpadding='0'>");
+	    document.write("<center><p>PROSSIMO</p><table cellspacing='0' cellpadding='0'>");
 	    for (i = 1; i <= 5; i++) {
 	        document.write('<tr>');
 	        for (j = 1; j <= 5; j++) {
